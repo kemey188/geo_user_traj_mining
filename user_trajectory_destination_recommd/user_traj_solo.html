@@ -1,0 +1,147 @@
+<!DOCTYPE HTML publish "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ <head>
+  <title>用户轨迹debug</title> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" >
+  <script type="text/javascript" src="https://api.map.so.com/js/?thirdparty=heatmap&plugins=HeatMapOverlay"></script>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <style type="text/css">
+    html,body{height:100%;overflow: hidden;}
+    *{
+      margin:0;padding:0;
+    }
+    .tools{
+      position:absolute;
+      left:45%;
+      top:5px;
+      overflow: hidden;
+    }
+    .btn {
+        padding:5px 20px;
+        -moz-border-radius:5px;
+        -o-border-radius:5px;
+        -webkit-border-radius:5px;
+        //border-radius:5px;
+        border-radius:10px;
+        border:1px solid black;
+        cursor:pointer;
+        color:white;
+        width:100px;
+		height:30px;
+        background-color:black;
+        //margin-bottom: 10px;
+        //margin-left: 10px;
+        float:right;
+		//text-align:10%;
+		margin-left:5px;
+		margin-right:5px;
+    }
+
+    .container{
+        padding-top:50px;
+        height:100%;
+        box-sizing:border-box;
+    }
+
+  </style>
+ </head>
+
+ <body>
+  <div class="tools">
+	<div id="tog" class="btn" style="position: absolute; vertical-align: left;">
+		<font face="微软雅黑" size="5" >用户轨迹</font> 
+	</div>
+	<div id="gen" class="btn">***</div>
+  </div>
+ 
+ <div class="container">
+  <div style="width:100%;height:100%;" id="map_canvas"></div>
+ </div>
+ <script>
+    var map;
+    icon_traj  = new so.maps.MarkerImage("./data/img/loc_10_10.png");
+	function attachSecretMessage(marker, num, data) {
+		//var message = data[num]["time"];
+		var message = data[num]["lat"].toString() + "," + data[num]["lng"].toString();
+		var infowindow = new so.maps.InfoWindow({
+												 content: message,
+												 map:map
+		});
+
+		so.maps.event.addListener(marker, 'click', function() {
+													infowindow.setPosition(marker);
+													infowindow.open();
+		});
+	}
+    
+
+	$.getJSON('./data/user_traj_solo.json', function(data){
+		    for (var i = 0; i < data.length; i++) {
+			   if ( i == 0 ){
+			     var startLatLng = new so.maps.LatLng(data[i]["lat"], data[i]["lng"]);
+				 s_lat = data[i]["lat"];
+				 s_lng = data[i]["lng"];
+				 //window.alert(s_lat.toString()+","+s_lng.toString());
+				 var dec1 = new so.maps.MarkerDecoration("<span style='color:#996633;'>起</span>", so.maps.ALIGN.TOP, new so.maps.Point(0, 3));
+				 map = new so.maps.Map(document.getElementById('map_canvas'), {
+									zoom: 9,
+									center: startLatLng,
+									maxZoom: 18,
+									minZoom: 3,
+									autoPan: false
+				 });
+	             var marker = new so.maps.Marker({
+	                                 position: startLatLng,
+	                                 map: map,
+	     							 title: data[i]["time"],
+									 decoration:dec1
+	    							});
+
+				 continue;
+			   }
+			   if (i == data.length-2){
+			     var endLatLng = new so.maps.LatLng(data[i]["lat"], data[i]["lng"]);
+				 e_lat = data[i]["lat"];
+				 e_lng = data[i]["lng"];
+				 var dec2 = new so.maps.MarkerDecoration("<span style='color:#996633;'>终</span>", so.maps.ALIGN.TOP, new so.maps.Point(0, 3));
+	             var marker = new so.maps.Marker({
+	                                 position: endLatLng,
+	                                 map: map,
+	     							 title: data[i]["time"],
+									 decoration:dec2
+	    							});
+				 break;
+			   }
+
+			   var mayLatLng = new so.maps.LatLng(data[i]["lat"], data[i]["lng"]);
+	           var marker = new so.maps.Marker({
+	                                             position: mayLatLng,
+	                                             map: map,
+                                                 icon:icon_traj,
+												 title: data[i]["time"]
+											  });
+
+			   attachSecretMessage(marker, i, data);
+			   /*
+			   var infowindow = new so.maps.InfoWindow({
+					                                    content: data[i]["name"],
+									                    map:map
+													  });
+			   var circle = new so.maps.Circle({
+                                                 strokeColor: '#228B22',
+                                                 strokeOpacity: 0.8,
+                                                 strokeWeight: 2,
+                                                 fillColor: '#9ACD32',
+                                                 fillOpacity: 0.35,
+                                                 map: map,
+                                                 center: new so.maps.LatLng(data[i]["lat"], data[i]["lng"]),
+                                                 radius:500
+                                                 });
+			  */
+			}
+    });
+
+ </script>
+
+ </body>
+</html>
