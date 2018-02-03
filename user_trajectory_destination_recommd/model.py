@@ -213,29 +213,42 @@ class trackModel(object):
         return candidates
 
 
-    def destinations_output(self, uid, candidates_info):
+    def destinations_output(self, uid, candidates_info, MERGE_THRESHOLD=300):
         from numpy import average
         from rgeo_parser import rgeoParser
+	from rugis import Distance	
 
         loc_candidates = candidates_info.get("loc_candidates")
         dtm_candidates = candidates_info.get("dtm_candidates")
         start_cnt_info = candidates_info.get("start_cnt_info")
         desti_cnt_info = candidates_info.get("desti_cnt_info")
         N = len(loc_candidates)
-        
+        desti_loc_record = []
+
         for idx in range(N):
             desti_loc = map(average, zip(*loc_candidates[idx]))
-            dt_distri, hour_distri = zip(*map(self.time_distri, dtm_candidates[idx]))
+            
 
-            dt_cnt  = len(set(dt_distri))
+            """ filter the similar candidates which below MERGE_THRESHOLD """
+            if idx == 0:
+                desti_loc_record.append(desti_loc)
+            else:
+                _dis = [Distance(desti_loc[0],desti_loc[1],loc[0],loc[1]) for loc in desti_loc_record]
+                if min(_dis) < MERGE_THRESHOLD:
+                    continue
+                else:
+                    desti_loc_record.append(desti_loc)
+
+	    dt_distri, hour_distri = zip(*map(self.time_distri, dtm_candidates[idx]))
+            weekday_pref = sum([self.isWeekday(str(dt)) for dt in dt_distri])/float(len(dt_distri))
+	    dt_cnt  = len(set(dt_distri))
             hour_pref = {k:round(v/float(len(hour_distri)),2) for k,v in dict(Counter(hour_distri)).iteritems()}
-
             desti_prob = float(desti_cnt_info[idx])/sum(desti_cnt_info) if sum(desti_cnt_info) > 0 else 0
             score = self.getScore(len(loc_candidates[idx]))
             rego_info = rgeoParser(desti_loc[0], desti_loc[1])
             rego_info = "%s\t%s\t%s\t%s\t%s" % rego_info if len(rego_info) > 0 else "N\tN\tN\tN\tN"
             
-            print "%s\t%.6f,%.6f\t%.4f\t%.4f\t%s\t%s\t" % (uid, desti_loc[0], desti_loc[1], desti_prob, score, dt_cnt, hour_pref) + rego_info
+            print "%s\t%.6f,%.6f\t%.4f\t%.4f\t%.4f\t%s\t%s\t" % (uid, desti_loc[0], desti_loc[1], score, desti_prob, weekday_pref, dt_cnt, hour_pref) + rego_info
 
 
     def getScore(self, x):
