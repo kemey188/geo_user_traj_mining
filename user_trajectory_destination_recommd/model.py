@@ -286,8 +286,8 @@ class trackModel(object):
 
 if __name__ == "__main__":
     if sys.argv[1] == "--build_feature":
-        #trackModel(ts_margin_threshold=600, dt_fmt="read", output_fmt="json").build_feature()
-        trackModel(ts_margin_threshold=600, dt_fmt="timestamp", output_fmt="normal").build_feature()
+        trackModel(ts_margin_threshold=600, dt_fmt="read", output_fmt="json").build_feature()
+        #trackModel(ts_margin_threshold=600, dt_fmt="timestamp", output_fmt="normal").build_feature()
     elif sys.argv[1] == "--predict":
         trackModel().predict()
     else:
