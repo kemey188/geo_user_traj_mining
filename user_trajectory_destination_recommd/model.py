@@ -151,7 +151,7 @@ class trackModel(object):
    
 
     def find_cluster(self, loc_set, top=5):
-        from qgis import dbscan
+        from rugis import dbscan
         
         #labels = dbscan(loc_set, minPts, radius, mgfactor) 
         labels = dbscan(loc_set, 1, 50, 1.5) 

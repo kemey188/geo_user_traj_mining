@@ -8,6 +8,7 @@ traj_input="/the/input/user/track/raw/log/"
 logparser_output="XXX/traj_recommendation/logparser"
 feature_output="XXX/traj_recommendation/features"
 predict_output="XXX/traj_recommendation/destination"
+rugis="XXX/traj_recommendation/rugis"
 aoi_cate_dict="aoi_category_maping.dict"
 
 ## 0. Build features for car tracks
@@ -29,7 +30,7 @@ function TRACK_LOGPARSER() {
 	-output ${logparser_output}/${dt} \
 	-mapper "python logparser.py" \
 	-reducer "cat" \
-	-file rugis \
+	-file ${rugis} \
 	-file logparser.py \
 	-numReduceTasks 10
 }
@@ -54,7 +55,7 @@ function BUILD_TRACK_FEATURES() {
 	-output ${feature_output}/${dt} \
 	-mapper "./python_anaconda model.py --build_feature" \
 	-reducer NONE \
-	-file rugis \
+	-file ${rugis} \
 	-file model.py \
 	-cacheArchive hdfs://hdfs_namenode:port/XXX/anaconda.tar.gz#anaconda
 }
@@ -78,7 +79,7 @@ function PREDICT_DESTINATION() {
 	-output ${predict_output}/${dt} \
 	-mapper  "cat" \
 	-reducer "./python_anaconda model.py --predict" \
-	-file rugis \
+	-file ${rugis} \
 	-file model.py \
     	-file ${aoi_cate_dict} \
 	-cacheArchive hdfs://hdfs_namenode:port/XXX/anaconda.tar.gz#anaconda
