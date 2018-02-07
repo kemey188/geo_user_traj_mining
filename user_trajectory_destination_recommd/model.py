@@ -5,7 +5,7 @@ from operator import itemgetter
 import json
 import time
 from collections import OrderedDict, Counter
-
+sys.path.append("rugis")
 
 class trackModel(object):
     def __init__(self, ts_margin_threshold=600, dt_fmt="timestamp", output_fmt="normal", dbg=False):
@@ -246,7 +246,7 @@ class trackModel(object):
             desti_prob = float(desti_cnt_info[idx])/sum(desti_cnt_info) if sum(desti_cnt_info) > 0 else 0
             score = self.getScore(len(loc_candidates[idx]))
             rego_info = rgeoParser(desti_loc[0], desti_loc[1])
-            rego_info = "%s\t%s\t%s\t%s\t%s" % rego_info if len(rego_info) > 0 else "N\tN\tN\tN\tN"
+            rego_info = "%s\t%s\t%s\t%s\t%s" % tuple(rego_info[:-1]) if len(rego_info) > 0 else "N\tN\tN\tN\tN"
             
             print "%s\t%.6f,%.6f\t%.4f\t%.4f\t%.4f\t%s\t%s\t" % (uid, desti_loc[0], desti_loc[1], score, desti_prob, weekday_pref, dt_cnt, hour_pref) + rego_info
 
