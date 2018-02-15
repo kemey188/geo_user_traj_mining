@@ -154,7 +154,7 @@ class trackModel(object):
         from rugis import dbscan
         
         #labels = dbscan(loc_set, minPts, radius, mgfactor) 
-        labels = dbscan(loc_set, 1, 50, 1.5) 
+        labels = dbscan(loc_set, 1, 300, 1.5) 
         clstr_info  = dict(Counter(labels))
         best_labels = [] 
         for lab, cnt in clstr_info.iteritems():
@@ -286,7 +286,7 @@ class trackModel(object):
 
 if __name__ == "__main__":
     if sys.argv[1] == "--build_feature":
-        trackModel(ts_margin_threshold=600, dt_fmt="read", output_fmt="json").build_feature()
+        trackModel(ts_margin_threshold=1800, dt_fmt="read", output_fmt="json").build_feature()
         #trackModel(ts_margin_threshold=600, dt_fmt="timestamp", output_fmt="normal").build_feature()
     elif sys.argv[1] == "--predict":
         trackModel().predict()
