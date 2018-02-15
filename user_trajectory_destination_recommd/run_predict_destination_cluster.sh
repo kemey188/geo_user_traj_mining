@@ -86,12 +86,12 @@ function PREDICT_DESTINATION() {
 }
 
 
-dt=20180131
-SCALE_THRESHOLD=10
+dt=20180201
+SCALE_THRESHOLD=15
 TRACK_LOGPARSER ${dt}
 BUILD_TRACK_FEATURES ${dt}
 
-## input data为从$dt 往前推10天，包含$dt
+## input data为从$dt 往前推算15天，包含$dt
 dt_set=`${HADOOP} fs -ls ${feature_output} \
 		|cut -d/ -f7 \
 		|awk '$1<="'${dt}'"' \

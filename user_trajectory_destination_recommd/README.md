@@ -1,4 +1,4 @@
-The purpose of this project is to predict the destination useing user's history trajectory behavior.
+The purpose of this project is to predict the destination by using user's history trajectory behavior.
 
 * ***Build trajectory Features***
 
